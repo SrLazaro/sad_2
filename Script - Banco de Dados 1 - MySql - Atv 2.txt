@@ -1,9 +1,9 @@
 -- Criando o banco de dados (DDL)
 -- Mudar o SeuNome
-CREATE DATABASE db_da_01_Teste;
+CREATE DATABASE db_da_01_sad;
 
 -- Setar o BD para uso
-USE db_da_01_Teste;
+USE db_da_01_sad;
 
 -- ------------------------------------
 -- Sugestão: Rodar trecho por trecho --
