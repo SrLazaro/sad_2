@@ -1,0 +1,135 @@
+-- Setar o BD para uso
+USE db_da_02_sad;
+
+---------------------------------------
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- 		  Resetando as Tabelas
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
+
+DELETE FROM item_venda where id >= 0;
+DELETE FROM venda where id >= 0;
+DELETE FROM status_venda where id >= 0;
+DELETE FROM canal_venda where id >= 0;
+DELETE FROM cliente where id >= 0;
+DELETE FROM endereco where id >= 0;
+DELETE FROM produto where id >= 0;
+DELETE FROM status_produto where id >= 0;
+DELETE FROM unidade where id >= 0;
+DELETE FROM tipo_produto where id >= 0;
+DELETE FROM dependente where id >= 0;
+DELETE FROM vendedor where id >= 0;
+DELETE FROM sexo where id >= 0;
+
+
+---------------------------------------
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- 		  Populando as Tabelas
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
+
+-- Inserindo dados na tabela Sexo
+---------------------------------------
+INSERT INTO sexo VALUES (0, 'Feminino', 'F'),
+						(1, 'Masculino', 'M');
+
+-- Inserindo dados na tabela Vendedor
+---------------------------------------
+INSERT INTO vendedor (id, nome, sexo_id, perccomissao, matricula)
+SELECT cdvdd, nmvdd, sexo.id, perccomissao, matfunc
+FROM db_da_01_sad.tbvdd as tbvdd
+INNER JOIN sexo ON tbvdd.sxvdd = sexo.id
+WHERE cdvdd IN (SELECT MAX(cdvdd) FROM db_da_01_sad.tbvdd  GROUP BY nmvdd);
+
+-- Inserindo dados na tabela Dependente
+---------------------------------------
+INSERT INTO dependente (id, nome, dtnasc, sexo_id, inepescola, vendedor_id)
+SELECT cddep, nmdep, dtnasc, sexo.id, inepescola, cdvdd
+FROM db_da_01_sad.tbdep as tbdep
+INNER JOIN sexo ON trim(tbdep.sxdep) = sexo.abreviacao;
+
+-- Inserindo dados na tabela Tipo de Produto
+---------------------------------------
+INSERT INTO tipo_produto (nome)
+SELECT tppro
+FROM db_da_01_sad.tbpro 
+WHERE cdpro IN (SELECT MAX(cdpro) FROM db_da_01_sad.tbpro  GROUP BY tppro);
+
+SET SQL_SAFE_UPDATES = 0; # Desativando modo seguro do Mysql
+UPDATE tipo_produto SET descricao = 'Tipo A' WHERE nome = 'A';
+UPDATE tipo_produto SET descricao = 'Tipo B' WHERE nome = 'B';
+UPDATE tipo_produto SET descricao = 'Tipo C' WHERE nome = 'C';
+UPDATE tipo_produto SET descricao = 'Desconhecido' WHERE nome is null;
+SET SQL_SAFE_UPDATES = 1; # Ativando modo seguro do Mysql
+
+-- Inserindo dados na tabela Unidade
+---------------------------------------
+INSERT INTO unidade (nome)
+SELECT undpro
+FROM db_da_01_sad.tbpro 
+WHERE cdpro IN (SELECT MAX(cdpro) FROM db_da_01_sad.tbpro  GROUP BY undpro);
+
+-- Inserindo dados na tabela Status de Produto
+---------------------------------------
+INSERT INTO status_produto (nome)
+SELECT stpro
+FROM db_da_01_sad.tbpro 
+WHERE cdpro IN (SELECT MAX(cdpro) FROM db_da_01_sad.tbpro  GROUP BY stpro);
+
+-- Inserindo dados na tabela Produto
+---------------------------------------
+INSERT INTO produto (id, nome, tipo_produto_id, unidade_id, saldo, status_id)
+SELECT cdpro, nmpro, tipo_produto.id, unidade.id, slpro, status_produto.id
+FROM db_da_01_sad.tbpro as tbpro
+INNER JOIN tipo_produto ON tbpro.tppro = tipo_produto.nome
+					    OR (tbpro.tppro IS NULL AND tipo_produto.nome IS NULL)
+INNER JOIN unidade on tbpro.undpro = unidade.nome
+INNER JOIN status_produto on tbpro.stpro = status_produto.nome;
+
+-- Inserindo dados na tabela Endereço
+---------------------------------------
+INSERT INTO endereco (cidade, estado, pais)
+SELECT distinct cidcli, estcli, paicli
+FROM db_da_01_sad.tbven;
+
+-- Inserindo dados na tabela Cliente
+---------------------------------------
+INSERT INTO cliente (id, nome, agencia, classificacao, sexo_id, endereco_id)
+SELECT distinct cdcli, nmcli, agecli, clacli, sexo.id, endereco.id
+FROM db_da_01_sad.tbven as tbven
+INNER JOIN sexo ON trim(tbven.sxcli) = sexo.abreviacao
+INNER JOIN endereco on  tbven.cidcli = endereco.cidade
+					and tbven.estcli = endereco.estado
+                    and tbven.paicli = endereco.pais
+WHERE cdcli IN (SELECT MAX(cdcli) FROM db_da_01_sad.tbven  GROUP BY cdcli);
+
+-- Inserindo dados na tabela Canal de Venda
+---------------------------------------
+INSERT INTO canal_venda (nome)
+SELECT distinct canal
+FROM db_da_01_sad.tbven;
+
+-- Inserindo dados na tabela Status de Venda
+---------------------------------------
+INSERT INTO status_venda VALUES (1, 'Concluída'),
+								(2, 'Em Aberto'),
+						        (3, 'Cancelada');
+
+-- Inserindo dados na tabela Venda
+---------------------------------------
+INSERT INTO venda (id, dtven, cliente_id, canal_id, status_id, vendedor_id, deletado)
+SELECT distinct cdven, dtven, cliente.id, canal_venda.id, status_venda.id, vendedor.id,
+				IF(deleted > 0, 1, 0)
+FROM db_da_01_sad.tbven as tbven
+INNER JOIN cliente ON tbven.cdcli = cliente.id
+INNER JOIN canal_venda on tbven.canal = canal_venda.nome
+INNER JOIN status_venda on tbven.stven = status_venda.id
+INNER JOIN vendedor on tbven.cdvdd = vendedor.id;
+
+-- Inserindo dados na tabela Item de Venda
+---------------------------------------
+INSERT INTO item_venda (id, quantidade, vlr_unitario, vlr_total, produto_id, venda_id)
+SELECT distinct cdvenitem, qtven, vruven, qtven*vruven, produto.id, venda.id
+FROM db_da_01_sad.tbven_item as item
+INNER JOIN produto ON item.cdpro = produto.id
+INNER JOIN venda on item.cdven = venda.id;

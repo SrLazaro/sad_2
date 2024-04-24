@@ -1,0 +1,153 @@
+-- Criando o banco de dados
+CREATE DATABASE db_da_02_sad;
+-- Setar o BD para uso
+USE db_da_02_sad;
+
+
+---------------------------------------
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- 			Criação das Tabelas
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
+
+-- Criando tabela de Sexo
+---------------------------------------
+CREATE TABLE sexo (
+   id         smallint PRIMARY KEY,
+   nome		  varchar(20),
+   abreviacao varchar(1)
+);
+
+-- Criando a tabela de Vendedor
+---------------------------------------
+CREATE TABLE vendedor (
+   id           smallint AUTO_INCREMENT PRIMARY KEY,
+   nome         varchar(20),
+   sexo_id      smallint, -- 1 - M | 0 - F
+   perccomissao decimal(19,2),
+   matricula    smallint not null,
+   FOREIGN KEY (sexo_id) REFERENCES sexo (id)
+);
+
+-- Criando tabela de Dependente
+---------------------------------------
+CREATE TABLE dependente (
+   id          INT AUTO_INCREMENT PRIMARY KEY,
+   nome        varchar(20),
+   dtnasc      date,
+   sexo_id     smallint,
+   inepescola  varchar(10),
+   vendedor_id smallint,
+   FOREIGN KEY (sexo_id) REFERENCES sexo (id),
+   FOREIGN KEY (vendedor_id) REFERENCES vendedor (id)
+);
+
+-- Criando tabela de Tipo de Produto
+---------------------------------------
+CREATE TABLE tipo_produto(
+    id   	  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome 	  varchar(1),
+    descricao varchar(20)
+);
+
+-- Criando tabela de Unidade Básica do Produto
+---------------------------------------
+CREATE TABLE unidade(
+    id   	  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome 	  varchar(3)
+);
+
+-- Criando tabela de Status do Produto
+---------------------------------------
+CREATE TABLE status_produto(
+    id   	  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome 	  varchar(50)
+);
+
+-- Criando tabela de Produto
+---------------------------------------
+CREATE TABLE produto(
+    id 				  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome 			  varchar(50) NULL,
+    tipo_produto_id   smallint,
+    unidade_id 		  smallint,
+    saldo 			  int NULL,
+    status_id		  smallint,
+    FOREIGN KEY (tipo_produto_id) REFERENCES tipo_produto (id),
+    FOREIGN KEY (unidade_id) REFERENCES unidade (id),
+    FOREIGN KEY (status_id) REFERENCES status_produto (id)
+);
+
+-- Criação da Tabela de Endereço
+CREATE TABLE endereco(
+	id   	smallint AUTO_INCREMENT PRIMARY KEY,
+    cidade  varchar(50) NULL,
+    estado  varchar(50) NULL,
+    pais    varchar(50) NULL
+);
+
+-- Criação da Tabela de Cliente
+---------------------------------------
+CREATE TABLE cliente(
+    id   		  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome   		  varchar(50) NULL,
+    agencia  	  smallint NULL,
+    classificacao smallint NULL,
+    sexo_id       smallint,
+    endereco_id   smallint,
+    FOREIGN KEY (sexo_id) REFERENCES sexo (id),
+    FOREIGN KEY (endereco_id) REFERENCES endereco (id)
+);
+
+-- Criando tabela de Canal da Venda
+---------------------------------------
+CREATE TABLE canal_venda(
+    id   	  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome 	  varchar(50)
+);
+
+-- Criando tabela de Status da Venda
+---------------------------------------
+CREATE TABLE status_venda(
+    id   	  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome 	  varchar(50)
+);
+
+-- Criando tabela de Venda
+---------------------------------------
+CREATE TABLE venda (
+    id SMALLINT AUTO_INCREMENT PRIMARY KEY,
+    dtven DATE NULL,
+    cliente_id SMALLINT NULL,
+    canal_id SMALLINT NULL,
+    status_id SMALLINT NULL,
+    vendedor_id SMALLINT NULL,
+    deletado BOOLEAN,
+    FOREIGN KEY (cliente_id)
+        REFERENCES cliente (id),
+    FOREIGN KEY (canal_id)
+        REFERENCES canal_venda (id),
+    FOREIGN KEY (status_id)
+        REFERENCES status_venda (id),
+    FOREIGN KEY (vendedor_id)
+        REFERENCES vendedor (id)
+);
+
+-- Criando tabela de Item de Venda
+---------------------------------------
+CREATE TABLE item_venda(
+    id           smallint AUTO_INCREMENT PRIMARY KEY,
+	quantidade   int NULL,
+    vlr_unitario decimal(18, 2) NULL,
+    vlr_total    decimal(29, 2) NULL,
+    produto_id   smallint NULL,
+    venda_id     smallint NULL,
+    FOREIGN KEY (produto_id) REFERENCES produto (id),
+    FOREIGN KEY (venda_id)   REFERENCES venda (id)
+);
+
+---------------------------------------
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- 		  Populando as Tabelas
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
