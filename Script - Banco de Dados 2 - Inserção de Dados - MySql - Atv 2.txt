@@ -46,7 +46,8 @@ WHERE cdvdd IN (SELECT MAX(cdvdd) FROM db_da_01_sad.tbvdd  GROUP BY nmvdd);
 INSERT INTO dependente (id, nome, dtnasc, sexo_id, inepescola, vendedor_id)
 SELECT cddep, nmdep, dtnasc, sexo.id, inepescola, cdvdd
 FROM db_da_01_sad.tbdep as tbdep
-INNER JOIN sexo ON trim(tbdep.sxdep) = sexo.abreviacao;
+INNER JOIN sexo ON trim(tbdep.sxdep) = sexo.abreviacao
+iNNER JOIN vendedor on tbdep.cdvdd = vendedor.id;
 
 -- Inserindo dados na tabela Tipo de Produto
 ---------------------------------------
@@ -78,7 +79,7 @@ WHERE cdpro IN (SELECT MAX(cdpro) FROM db_da_01_sad.tbpro  GROUP BY stpro);
 
 -- Inserindo dados na tabela Produto
 ---------------------------------------
-INSERT INTO produto (id, nome, tipo_produto_id, unidade_id, saldo, status_id)
+INSERT INTO produto (id, nome, tipo_id, unidade_id, saldo, status_id)
 SELECT cdpro, nmpro, tipo_produto.id, unidade.id, slpro, status_produto.id
 FROM db_da_01_sad.tbpro as tbpro
 INNER JOIN tipo_produto ON tbpro.tppro = tipo_produto.nome
