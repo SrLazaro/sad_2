@@ -69,11 +69,11 @@ CREATE TABLE status_produto(
 CREATE TABLE produto(
     id 				  smallint AUTO_INCREMENT PRIMARY KEY,
     nome 			  varchar(50) NULL,
-    tipo_produto_id   smallint,
+    tipo_id   		  smallint,
     unidade_id 		  smallint,
     saldo 			  int NULL,
     status_id		  smallint,
-    FOREIGN KEY (tipo_produto_id) REFERENCES tipo_produto (id),
+    FOREIGN KEY (tipo_id) REFERENCES tipo_produto (id),
     FOREIGN KEY (unidade_id) REFERENCES unidade (id),
     FOREIGN KEY (status_id) REFERENCES status_produto (id)
 );
@@ -145,9 +145,3 @@ CREATE TABLE item_venda(
     FOREIGN KEY (produto_id) REFERENCES produto (id),
     FOREIGN KEY (venda_id)   REFERENCES venda (id)
 );
-
----------------------------------------
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
--- 		  Populando as Tabelas
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
----------------------------------------
