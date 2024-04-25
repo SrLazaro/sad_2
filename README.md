@@ -31,6 +31,8 @@ Preenchendo os dados:
 
 Agora com um banco de dados organizado e mais coeso. Podemos selecionar os dados e pesquisar conforme a necessidade:
 ![image](https://github.com/SrLazaro/sad_2/assets/78516759/43294e35-1cb7-469a-bab0-eb0862526a6f)
+![image](https://github.com/SrLazaro/sad_2/assets/78516759/882ff51e-75ce-40f6-8d59-7df6eb05b8d3)
+![image](https://github.com/SrLazaro/sad_2/assets/78516759/89bc725a-b147-4825-99e5-e5bdcedbde66)
 
 
 
