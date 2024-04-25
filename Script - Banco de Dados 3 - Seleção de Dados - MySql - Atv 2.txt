@@ -1,0 +1,34 @@
+select fato_venda.id as codigoDaVenda,
+	   dtven,
+       sum(vlr_total) total,
+	   dim_cliente.nome as nomeCliente,
+       dim_vendedor.nome as nomeVendedor,
+       dim_canal_venda.nome as canalVenda,
+       dim_status_venda.nome as StatusVenda,
+       deletado
+from fato_venda
+inner join dim_cliente      on fato_venda.cliente_id  = dim_cliente.id
+inner join dim_vendedor     on fato_venda.vendedor_id = dim_vendedor.id
+inner join dim_status_venda on fato_venda.status_id   = dim_status_venda.id
+inner join dim_canal_venda  on fato_venda.canal_id    = dim_canal_venda.id
+inner join dim_item_venda   on fato_venda.id          = dim_item_venda.venda_id
+		GROUP BY fato_venda.id;
+
+select dim_vendedor.nome as nomeVendedor,
+	   sexov.nome as sexoVendedor,
+       matricula,
+       dim_dependente.nome as nomeDepedente,
+       sexod.nome as sexoDependente,
+       YEAR(FROM_DAYS(TO_DAYS(NOW())-TO_DAYS(dim_dependente.dtnasc))) AS idadeDependente
+from dim_vendedor
+inner join dim_dependente on dim_vendedor.id = dim_dependente.vendedor_id
+inner join dim_sexo as sexov on dim_vendedor.sexo_id = sexov.id
+inner join dim_sexo as sexod on dim_dependente.sexo_id = sexod.id;
+
+select nome,
+	   pais,
+       estado,
+       cidade
+from dim_cliente
+inner join dim_endereco on dim_cliente.endereco_id = dim_endereco.id;
+		

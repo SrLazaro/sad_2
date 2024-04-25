@@ -1,0 +1,147 @@
+-- Criando o banco de dados
+CREATE DATABASE db_da_03_sad;
+-- Setar o BD para uso
+USE db_da_03_sad;
+
+
+---------------------------------------
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- 			Criação das Tabelas
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
+
+-- Criando tabela de Dimensão: Sexo
+---------------------------------------
+CREATE TABLE dim_sexo (
+   id         smallint PRIMARY KEY,
+   nome		  varchar(20),
+   abreviacao varchar(1)
+);
+
+-- Criando a tabela de Dimensão: Vendedor
+---------------------------------------
+CREATE TABLE dim_vendedor (
+   id           smallint AUTO_INCREMENT PRIMARY KEY,
+   nome         varchar(20),
+   sexo_id      smallint, -- 1 - M | 0 - F
+   perccomissao decimal(19,2),
+   matricula    smallint not null,
+   FOREIGN KEY (sexo_id) REFERENCES dim_sexo (id)
+);
+
+-- Criando tabela de Dimensão: Dependente
+---------------------------------------
+CREATE TABLE dim_dependente (
+   id          INT AUTO_INCREMENT PRIMARY KEY,
+   nome        varchar(20),
+   dtnasc      date,
+   sexo_id     smallint,
+   inepescola  varchar(10),
+   vendedor_id smallint,
+   FOREIGN KEY (sexo_id) REFERENCES dim_sexo (id),
+   FOREIGN KEY (vendedor_id) REFERENCES dim_vendedor (id)
+);
+
+-- Criando tabela de Tipo de Dimensão: Produto
+---------------------------------------
+CREATE TABLE dim_tipo_produto(
+    id   	  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome 	  varchar(1),
+    descricao varchar(20)
+);
+
+-- Criando tabela de Dimensão: Unidade Básica do Produto
+---------------------------------------
+CREATE TABLE dim_unidade(
+    id   	  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome 	  varchar(3)
+);
+
+-- Criando tabela de Dimensão: Status do Produto
+---------------------------------------
+CREATE TABLE dim_status_produto(
+    id   	  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome 	  varchar(50)
+);
+
+-- Criando tabela de Dimensão: Produto
+---------------------------------------
+CREATE TABLE dim_produto(
+    id 				  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome 			  varchar(50) NULL,
+    tipo_id	 	      smallint,
+    unidade_id 		  smallint,
+    saldo 			  int NULL,
+    status_id		  smallint,
+    FOREIGN KEY (tipo_id) REFERENCES dim_tipo_produto (id),
+    FOREIGN KEY (unidade_id) REFERENCES dim_unidade (id),
+    FOREIGN KEY (status_id) REFERENCES dim_status_produto (id)
+);
+
+-- Criação da Tabela de Dimensão: Endereço
+CREATE TABLE dim_endereco(
+	id   	smallint AUTO_INCREMENT PRIMARY KEY,
+    cidade  varchar(50) NULL,
+    estado  varchar(50) NULL,
+    pais    varchar(50) NULL
+);
+
+-- Criação da Tabela de Dimensão: Cliente
+---------------------------------------
+CREATE TABLE dim_cliente(
+    id   		  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome   		  varchar(50) NULL,
+    agencia  	  smallint NULL,
+    classificacao smallint NULL,
+    sexo_id       smallint,
+    endereco_id   smallint,
+    FOREIGN KEY (sexo_id) REFERENCES dim_sexo (id),
+    FOREIGN KEY (endereco_id) REFERENCES dim_endereco (id)
+);
+
+-- Criando tabela de Dimensão: Canal da Venda
+---------------------------------------
+CREATE TABLE dim_canal_venda(
+    id   	  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome 	  varchar(50)
+);
+
+-- Criando tabela de Dimensão: Status da Venda
+---------------------------------------
+CREATE TABLE dim_status_venda(
+    id   	  smallint AUTO_INCREMENT PRIMARY KEY,
+    nome 	  varchar(50)
+);
+
+-- Criando tabela de Fato: Venda
+---------------------------------------
+CREATE TABLE fato_venda (
+    id SMALLINT AUTO_INCREMENT PRIMARY KEY,
+    dtven DATE NULL,
+    cliente_id SMALLINT NULL,
+    canal_id SMALLINT NULL,
+    status_id SMALLINT NULL,
+    vendedor_id SMALLINT NULL,
+    deletado BOOLEAN,
+    FOREIGN KEY (cliente_id)
+        REFERENCES dim_cliente (id),
+    FOREIGN KEY (canal_id)
+        REFERENCES dim_canal_venda (id),
+    FOREIGN KEY (status_id)
+        REFERENCES dim_status_venda (id),
+    FOREIGN KEY (vendedor_id)
+        REFERENCES dim_vendedor (id)
+);
+
+-- Criando tabela de Dimensão: Item de Venda
+---------------------------------------
+CREATE TABLE dim_item_venda(
+    id           smallint AUTO_INCREMENT PRIMARY KEY,
+	quantidade   int NULL,
+    vlr_unitario decimal(18, 2) NULL,
+    vlr_total    decimal(29, 2) NULL,
+    produto_id   smallint NULL,
+    venda_id     smallint NULL,
+    FOREIGN KEY (produto_id) REFERENCES dim_produto (id),
+    FOREIGN KEY (venda_id)   REFERENCES fato_venda (id)
+);

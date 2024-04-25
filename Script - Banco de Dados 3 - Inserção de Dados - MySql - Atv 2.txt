@@ -1,0 +1,120 @@
+-- Setar o BD para uso
+USE db_da_03_sad;
+
+---------------------------------------
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- 		  Resetando as Tabelas
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
+
+DELETE FROM dim_item_venda     where id >= 0;
+DELETE FROM fato_venda 		   where id >= 0;
+DELETE FROM dim_status_venda   where id >= 0;
+DELETE FROM dim_canal_venda    where id >= 0;
+DELETE FROM dim_cliente 	   where id >= 0;
+DELETE FROM dim_endereco 	   where id >= 0;
+DELETE FROM dim_produto 	   where id >= 0;
+DELETE FROM dim_status_produto where id >= 0;
+DELETE FROM dim_unidade 	   where id >= 0;
+DELETE FROM dim_tipo_produto   where id >= 0;
+DELETE FROM dim_dependente     where id >= 0;
+DELETE FROM dim_vendedor 	   where id >= 0;
+DELETE FROM dim_sexo 	       where id >= 0;
+
+---------------------------------------
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- 		  Populando as Tabelas
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
+
+-- Inserindo dados na tabela Dimensão: Sexo
+---------------------------------------
+INSERT INTO dim_sexo (id, nome, abreviacao)
+SELECT id, nome, abreviacao
+FROM db_da_02_sad.sexo;
+
+-- Inserindo dados na tabela Dimensão: Vendedor
+---------------------------------------
+INSERT INTO dim_vendedor (id, nome, sexo_id, perccomissao, matricula)
+SELECT vendedor.id, vendedor.nome, sexo_id, perccomissao, matricula
+FROM db_da_02_sad.vendedor as vendedor
+INNER JOIN dim_sexo ON vendedor.sexo_id = dim_sexo.id;
+
+-- Inserindo dados na tabela Dimensão: Dependente
+---------------------------------------
+INSERT INTO dim_dependente (id, nome, dtnasc, sexo_id, inepescola, vendedor_id)
+SELECT dependente.id, dependente.nome, dtnasc, dependente.sexo_id, inepescola, vendedor_id
+FROM db_da_02_sad.dependente as dependente
+INNER JOIN dim_sexo ON dependente.sexo_id = dim_sexo.id
+iNNER JOIN dim_vendedor ON dependente.vendedor_id = dim_vendedor.id;
+
+-- Inserindo dados na tabela Dimensão: Tipo de Produto
+---------------------------------------
+INSERT INTO dim_tipo_produto (id, nome, descricao)
+SELECT id, nome, descricao
+FROM db_da_02_sad.tipo_produto;
+
+-- Inserindo dados na tabela Dimensão: Unidade
+---------------------------------------
+INSERT INTO dim_unidade (id, nome)
+SELECT id, nome
+FROM db_da_02_sad.unidade;
+
+-- Inserindo dados na tabela Dimensão: Status de Produto
+---------------------------------------
+INSERT INTO dim_status_produto (id, nome)
+SELECT id, nome
+FROM db_da_02_sad.status_produto;
+
+-- Inserindo dados na tabela Dimensão: Produto
+---------------------------------------
+INSERT INTO dim_produto (id, nome, tipo_id, unidade_id, saldo, status_id)
+SELECT produto.id, produto.nome, tipo_id, unidade_id, saldo, status_id
+FROM db_da_02_sad.produto AS produto
+INNER JOIN dim_tipo_produto ON produto.tipo_id = dim_tipo_produto.id
+INNER JOIN dim_unidade ON produto.unidade_id = dim_unidade.id
+INNER JOIN dim_status_produto ON produto.status_id = dim_status_produto.id;
+
+-- Inserindo dados na tabela Dimensão: Endereço
+---------------------------------------
+INSERT INTO dim_endereco (id, cidade, estado, pais)
+SELECT id, cidade, estado, pais
+FROM db_da_02_sad.endereco;
+
+-- Inserindo dados na tabela Dimensão: Cliente
+---------------------------------------
+INSERT INTO dim_cliente (id, nome, agencia, classificacao, sexo_id, endereco_id)
+SELECT cliente.id, cliente.nome, agencia, classificacao, sexo_id, endereco_id
+FROM db_da_02_sad.cliente AS cliente
+INNER JOIN dim_sexo ON cliente.sexo_id = dim_sexo.id
+INNER JOIN dim_endereco on cliente.endereco_id = dim_endereco.id;
+
+-- Inserindo dados na tabela Dimensão: Canal de Venda
+---------------------------------------
+INSERT INTO dim_canal_venda (id, nome)
+SELECT id, nome
+FROM db_da_02_sad.canal_venda;
+
+-- Inserindo dados na tabela Dimensão: Status de Venda
+---------------------------------------                               
+INSERT INTO dim_status_venda (id, nome)
+SELECT id, nome
+FROM db_da_02_sad.status_venda;
+
+-- Inserindo dados na tabela Fato: Venda
+---------------------------------------
+INSERT INTO fato_venda (id, dtven, cliente_id, canal_id, status_id, vendedor_id, deletado)
+SELECT venda.id, dtven, cliente_id, canal_id, status_id, vendedor_id, deletado
+FROM db_da_02_sad.venda AS venda
+INNER JOIN dim_cliente 		ON venda.cliente_id  = dim_cliente.id
+INNER JOIN dim_canal_venda  ON venda.canal_id    = dim_canal_venda.id
+INNER JOIN dim_status_venda ON venda.status_id   = dim_status_venda.id
+INNER JOIN dim_vendedor 	ON venda.vendedor_id = dim_vendedor.id;
+
+-- Inserindo dados na tabela Dimensão: Item de Venda
+---------------------------------------
+INSERT INTO dim_item_venda (id, quantidade, vlr_unitario, vlr_total, produto_id, venda_id)
+SELECT item.id, quantidade, vlr_unitario, vlr_total, produto_id, venda_id
+FROM db_da_02_sad.item_venda AS item
+INNER JOIN dim_produto ON item.produto_id = dim_produto.id
+INNER JOIN fato_venda  ON item.venda_id   = fato_venda.id;
