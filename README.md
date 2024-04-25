@@ -28,3 +28,12 @@ Após criado as tabelas, obtemos a seguinte visualização:
 
 Preenchendo os dados:
 ![image](https://github.com/SrLazaro/sad_2/assets/78516759/1611d5b9-a18c-4d5b-8c41-258ce10a544f)
+
+Agora com um banco de dados organizado e mais coeso. Podemos selecionar os dados e pesquisar conforme a necessidade:
+![image](https://github.com/SrLazaro/sad_2/assets/78516759/43294e35-1cb7-469a-bab0-eb0862526a6f)
+
+
+
+
+
+
