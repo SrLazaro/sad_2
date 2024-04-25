@@ -16,7 +16,7 @@ Agora, será necesário efetuar o processo de tratamento e inserção dos dados 
 ![image](https://github.com/SrLazaro/sad_2/assets/78516759/7cce355f-6322-4f2a-9288-2c45aa6a95be)
 ![image](https://github.com/SrLazaro/sad_2/assets/78516759/e8942ccd-0fe5-4c97-90e2-ad7b3d670332)
 
-Finalmente finalizado o processo de ETL, iremos criar a tabela fato e suas dimensões me outro banco.
+Finalmente finalizado o processo de ETL, iremos criar a tabela fato e suas dimensões em outro banco.
 
 Criando o banco de dados:
 ![image](https://github.com/SrLazaro/sad_2/assets/78516759/629aa387-7b7e-4fbe-b215-52e7e9959212)
