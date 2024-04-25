@@ -36,7 +36,7 @@ INSERT INTO sexo VALUES (0, 'Feminino', 'F'),
 -- Inserindo dados na tabela Vendedor
 ---------------------------------------
 INSERT INTO vendedor (id, nome, sexo_id, perccomissao, matricula)
-SELECT cdvdd, nmvdd, sexo.id, perccomissao, matfunc
+SELECT cdvdd, trim(nmvdd), sexo.id, perccomissao, matfunc
 FROM db_da_01_sad.tbvdd as tbvdd
 INNER JOIN sexo ON tbvdd.sxvdd = sexo.id
 WHERE cdvdd IN (SELECT MAX(cdvdd) FROM db_da_01_sad.tbvdd  GROUP BY nmvdd);
